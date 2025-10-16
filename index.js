@@ -9,6 +9,9 @@
  * 5. Generate a response using the retrieved context
  */
 
+// Load environment variables
+require('dotenv').config();
+
 const { chunkPdfContent } = require('./chunker');
 const { generateEmbeddingsForChunks } = require('./embeddings');
 const { ragQuery } = require('./retrieval');
@@ -16,9 +19,14 @@ const { ragQuery } = require('./retrieval');
 async function main() {
   console.log("RAG PDF Summarizer started");
 
-  // Configuration - using the same API key and model as before
-  const apiKey = "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";
+  // Configuration - API key from environment variables
+  const apiKey = process.env.OPENROUTER_API_KEY;
   const pdfPath = './assets/prueba_tecnica_platzi.pdf';
+
+  // Validate API key
+  if (!apiKey) {
+    throw new Error('OPENROUTER_API_KEY environment variable is required. Please check your .env file.');
+  }
 
   try {
     // Step 1: Chunk the PDF content
