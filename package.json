@@ -1,0 +1,17 @@
+{
+  "name": "prueba-tecnica-llm-read-pdf",
+  "version": "1.0.0",
+  "description": "RAG system for PDF processing with local embeddings",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": ["rag", "embeddings", "pdf", "huggingface"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@xenova/transformers": "^2.17.1",
+    "pdf-parse": "^1.1.1"
+  }
+}
