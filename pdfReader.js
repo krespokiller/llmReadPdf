@@ -1,15 +1,10 @@
-const fs = require('fs');
 const pdfParse = require('pdf-parse');
 
-async function readPdf(filePath) {
+async function readPdf(buffer) {
   try {
-    const dataBuffer = await fs.promises.readFile(filePath);
-    const data = await pdfParse(dataBuffer);
+    const data = await pdfParse(buffer);
     return data.text;
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      throw new Error(`File not found: ${filePath}`);
-    }
     throw new Error(`Error parsing PDF: ${error.message}`);
   }
 }
