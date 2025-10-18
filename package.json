@@ -2,10 +2,10 @@
   "name": "prueba-tecnica-llm-read-pdf",
   "version": "1.0.0",
   "description": "Server-side PDF processing and text extraction for document reader tool",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node src/server.js"
   },
   "keywords": [
     "pdf",

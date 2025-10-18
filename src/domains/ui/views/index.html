@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Reader Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .upload-form { margin-bottom: 20px; }
+    input[type="file"] { margin-bottom: 10px; }
+    button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    #results { margin-top: 20px; }
+    .chunk { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Document Reader Tool</h1>
+  <form class="upload-form" id="uploadForm">
+    <input type="file" id="document" name="document" accept=".pdf" required>
+    <input type="text" id="query" name="query" placeholder="Enter your query" required>
+    <button type="submit">Process Document</button>
+  </form>
+  <div id="results"></div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('document', document.getElementById('document').files[0]);
+      formData.append('query', document.getElementById('query').value);
+
+      const results = document.getElementById('results');
+      results.innerHTML = 'Processing...';
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (response.ok) {
+          results.innerHTML = '<h2>Answer</h2>' +
+            '<p><strong>Your Query:</strong> ' + data.query + '</p>' +
+            '<div><strong>Response:</strong><br>' + data.response + '</div>';
+        } else {
+          results.innerHTML = '<p>Error: ' + data.error + '</p>';
+        }
+      } catch (error) {
+        results.innerHTML = '<p>Error: ' + error.message + '</p>';
+      }
+    });
+  </script>
+</body>
+</html>
