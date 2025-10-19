@@ -15,6 +15,9 @@ app.use('/', documentRoutes);
 // Start server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+  console.log('Make sure your Docker containers are running:');
+  console.log('- ai/embeddinggemma:latest on port 12434');
+  console.log('- ai/deepseek-r1-distill-llama:latest on port 12435');
 });
 
 module.exports = app;
