@@ -1,0 +1,104 @@
+// Don't forget to tell Prisma about your edits to this file using
+// `yarn rw prisma migrate dev` or `yarn rw prisma db push`.
+// `migrate` is like committing while `push` is for prototyping.
+// Read more about both here:
+// https://www.prisma.io/docs/orm/prisma-migrate
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = "native"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  hashedPassword      String
+  salt                String
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  role                UserRole  @default(CUSTOMER)
+  name                String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  documents           Document[]
+  chatSessions        ChatSession[]
+}
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  filename    String
+  originalName String
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  uploadedBy  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  chunks      DocumentChunk[]
+}
+
+model DocumentChunk {
+  id          Int      @id @default(autoincrement())
+  documentId  Int
+  chunkIndex  Int
+  content     String   @db.Text
+  pageNumber  Int?
+  createdAt   DateTime @default(now())
+  
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  embedding   Embedding?
+  
+  @@index([documentId])
+}
+
+model Embedding {
+  id              Int      @id @default(autoincrement())
+  chunkId         Int      @unique
+  vector          Float[]
+  model           String   @default("ai/embeddinggemma")
+  createdAt       DateTime @default(now())
+  
+  chunk           DocumentChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+  
+  @@index([chunkId])
+}
+
+model ChatSession {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+  
+  @@index([userId])
+}
+
+model ChatMessage {
+  id              Int      @id @default(autoincrement())
+  sessionId       Int
+  role            String   // 'user' or 'assistant'
+  content         String   @db.Text
+  sources         Json?    // Array of source document references
+  createdAt       DateTime @default(now())
+  
+  session         ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@index([sessionId])
+}
