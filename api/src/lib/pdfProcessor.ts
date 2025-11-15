@@ -1,5 +1,5 @@
 // Import pdf-parse correctly as a CommonJS default export
-import PdfParse = require('pdf-parse')
+import PdfParse from 'pdf-parse'
 
 export interface DocumentChunk {
   id: string
